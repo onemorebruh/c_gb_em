@@ -1,18 +1,28 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
+#include <X11/Xlib.h>
 
-int SCREEN_WIDTH = 854;
-int SCREEN_HEIGHT = 480;
 
-class RenderWindow {
-	public:
-		RenderWindow( const char* title, int width, int height);
-		SDL_Renderer* GetRenderer();
-		void close();
-	private:
-		SDL_Window* window;
-		SDL_Renderer* renderer;
-};
+int main (){
+	XEvent event;
+	Display* display = XOpenDisplay(NULL);
+	Window window = XCreateSimpleWindow(display,
+			DefaultRootWindow(display),
+			50, 50, 250, 250,
+			1, BlackPixel(display, 0), WhitePixel(display, 0));
 
-void main (){
+
+	XMapWindow(display, window);
+	XSelectInput(display, window, ExposureMask);
+
+
+
+	for (;;){
+		XNextEvent(display, &event);
+		if (event.type == Expose){
+			XDrawString(display, window,
+				DefaultGC(display, 0),
+				100, 100, "it works", 8);
+		};
+	};
+
+	return 0;
 }
