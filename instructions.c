@@ -1,0 +1,58 @@
+struct incsruction {
+	char *disassembly;
+	unsigned char operandLength;
+	void *execute;
+} extern const inctruction instructions[256];
+
+const struct instruction instructions[256] = {
+	// 0x
+	{ "NOP", 0, nop },
+	{ "LD BC, d16", 2, NULL},
+	{ "LD (BC), A", 0, NULL},
+	{ "INC BC", 0, NULL},
+	{ "INC B", 0, NULL},
+	{ "DEC B", 0, NULL},
+	{ "LD B, d8", 1, NULL},
+	{ "RLCA", 0, NULL},
+	{ "LD (a16), SP", 2, NULL},
+	{ "ADD HL, BC", 0, NULL},
+	{ "LD A, (BC)", 0, NULL},
+	{ "DEC BC", 0, NULL},
+	{ "INC C", 0, NULL},
+	{ "DEC C", 0, NULL},
+	{ "LD C, d8", 1, NULL},
+	{ "RRCA", 0, NULL},
+	// 1x
+	{ "STOP", 0, nop },
+	{ "LD DE, d16", 2, NULL},
+	{ "LD (DE), A", 0, NULL},
+	{ "INC DE", 0, NULL},
+	{ "INC D", 0, NULL},
+	{ "DEC D", 0, NULL},
+	{ "LD D, d8", 1, NULL},
+	{ "RLA", 0, NULL},
+	{ "JR s8", 1, NULL},
+	{ "ADD HL, DE", 0, NULL},
+	{ "LD A, (DE)", 0, NULL},
+	{ "DEC DE", 0, NULL},
+	{ "INC E", 0, NULL},
+	{ "DEC E", 0, NULL},
+	{ "LD E, d8", 1, NULL},
+	{ "RRA", 0, NULL},
+	// 2x
+	{ "JR NZ, s8", 1, nop },
+	{ "LD HL, d16", 2, NULL},
+	{ "LD (HL+), A", 0, NULL},
+	{ "INC HL", 0, NULL},
+	{ "INC H", 0, NULL},
+	{ "DEC H", 0, NULL},
+	{ "LD H, d8", 1, NULL},
+	{ "DAA", 0, NULL},
+	{ "JR Z s8", 2, NULL},
+	{ "ADD HL, HL", 0, NULL},
+	{ "LD A, (HL+)", 0, NULL},
+	{ "DEC HL", 0, NULL},
+	{ "INC L", 0, NULL},
+	{ "DEC L", 0, NULL},
+	{ "LD L, d8", 1, NULL},
+	{ "CPL", 0, NULL},
