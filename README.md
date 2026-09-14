@@ -10,8 +10,8 @@ c_gb_em is a simple gameboy emulator
 ### Todo
 
 - [ ] load ROM
-- [ ] disassemble or smth
 - [x] registers
+- [ ] cpu
 - [ ] instructions
 - [ ] graphics
 - [ ] audio

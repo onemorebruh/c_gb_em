@@ -8,3 +8,8 @@ void LD(char* left_ptr, char* right_ptr){
     *left_ptr = *right_ptr;
     return;
 }
+//add right to left
+void ADD(char* left_ptr, char* right_ptr){
+    *left_ptr = *left_ptr + *right_ptr;
+    return;
+}

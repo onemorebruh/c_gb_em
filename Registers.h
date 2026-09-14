@@ -2,8 +2,8 @@ struct registers {
 	struct {
 		union {
 			struct {
-				unsigned char f;
 				unsigned char a;
+				unsigned char f;
 			};
 			unsigned short af;
 		};
@@ -35,7 +35,13 @@ struct registers {
 			unsigned short hl;
 		};
 	};
+	//bit 7: zero
+	//bit 6: substraction
+	//bit 5: half carry
+	//bit 4: carry
 	unsigned char flags;
 	unsigned short sp;
 	unsigned short pc;
 } extern registers;
+
+typedef struct registers;
