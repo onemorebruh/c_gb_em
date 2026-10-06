@@ -19,7 +19,7 @@ int main(){
     cout<<"TURN ON:    ";
     registers_test.flags = 0x0;
     registers_test.carry_turn_on();
-    if(registers_test.flags ^ 0b00010000){
+    if(!(registers_test.flags ^ 0b00010000)){
         cout<<"PASSED"<<endl;
     } else{
         cout<<"FAILED"<<endl;
@@ -158,7 +158,7 @@ int main(){
     cout<<"DEC_B:      ";
     registers_test.b = 0x1;
     DEC_B();
-    if(registers_test.bc == 0x0){
+    if(registers_test.b == 0x0){
         cout<<"PASSED"<<endl;
     } else{
         cout<<"FAILED"<<endl;
@@ -167,9 +167,9 @@ int main(){
     
 
     cout<<"LD_B_N:     ";
-    registers_test.bc = 0x0;
+    registers_test.b = 0x0;
     LD_B_N(0x1);
-    if(registers_test.bc == 0x1){
+    if(registers_test.b == 0x1){
         cout<<"PASSED"<<endl;
     } else{
         cout<<"FAILED"<<endl;
@@ -177,7 +177,7 @@ int main(){
 
 
 
-    cout << "RLCA" << endl;
+    cout << "RLCA" << endl;//NOTE possible bug here
 
     cout << "BIG VALUE:     ";
     registers_test.a = 0b10010110;
@@ -210,5 +210,118 @@ int main(){
     } else {
         cout << "FAILED" << endl;
         cout<<" value have not been rotated successfully";
+    }
+
+    cout << "ADD_HL_BC:  ";
+    registers_test.hl = 0x1000;
+    registers_test.bc = 0x0100;
+    ADD_HL_BC();
+    if(registers_test.hl == 0x1100){
+        cout << "PASSED" << endl;
+    } else {
+        cout << "FAILED" << endl;
+    }
+
+
+    cout << "LD_A_BCP:   ";
+    registers_test.bc = 0x1234;
+    registers_test.a = 0x00;
+    LD_A_BCP();
+    if(registers_test.a == 0x1234){
+        cout << "PASSED" << endl;
+    } else {
+        cout << "FAILED" << endl;
+    }
+
+
+    cout << "DEC_BC:     ";
+    registers_test.bc = 0x0001;
+    DEC_BC();
+    if(registers_test.bc == 0x0000){
+        cout << "PASSED" << endl;
+    } else {
+        cout << "FAILED" << endl;
+    }
+
+
+    cout << "INC_C:      ";
+    registers_test.c = 0x00;
+    INC_C();
+    if(registers_test.c == 0x01){
+        cout << "PASSED" << endl;
+    } else {
+        cout << "FAILED" << endl;
+    }
+
+
+    cout << "DEC_C:      ";
+    registers_test.c = 0x01;
+    DEC_C();
+    if(registers_test.c == 0x00){
+        cout << "PASSED" << endl;
+    } else {
+        cout << "FAILED" << endl;
+    }
+
+
+    cout << "LD_C_N:     ";
+    registers_test.c = 0x00;
+    LD_C_N(0x42);
+    if(registers_test.c == 0x42){
+        cout << "PASSED" << endl;
+    } else {
+        cout << "FAILED" << endl;
+    }
+
+
+    cout << "RRCA" << endl;
+    cout << "BIG VALUE:  ";
+    registers_test.a = 0b10010110;
+    registers_test.flags = 0x00;
+    RRCA();
+    if(registers_test.a == 0b01001011){
+        if(registers_test.flags == 0x00){
+            cout << "PASSED" << endl;
+        } else {
+            cout << "FAILED" << endl;
+            cout << "flags have not been cleared" << endl;
+        }
+    } else {
+        cout << "FAILED" << endl;
+        cout << "value have not been rotated successfully" << endl;
+    }
+
+
+    cout << "SMALL VALUE:";
+    registers_test.a = 0b00110110;
+    registers_test.flags = 0x00;
+    RRCA();
+    if(registers_test.a == 0b00011011){
+        if(registers_test.flags == 0x00){
+            cout << "PASSED" << endl;
+        } else {
+            cout << "FAILED" << endl;
+            cout << "flags have not been cleared" << endl;
+        }
+    } else {
+        cout << "FAILED" << endl;
+        cout << "value have not been rotated successfully" << endl;
+    }
+
+
+    cout << "RRCA CARRY: ";
+    registers_test.a = 0b00000001;
+    registers_test.flags = 0x00;
+    RRCA();
+    if(registers_test.a == 0b10000000){
+        if(registers_test.flags == 0x00){
+            cout << "PASSED" << endl;
+        } else {
+            cout << "FAILED" << endl;
+            cout << "flags have not been cleared" << endl;
+        }
+    } else {
+        cout << "FAILED" << endl;
+        cout << "carry bit was not rotated to bit 7" << endl;
     }
 }

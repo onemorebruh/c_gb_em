@@ -42,3 +42,62 @@ void RLCA(void){
 
     registers.clear_flags();
 }
+
+//0x08
+void LD_NNP_SP(unsigned short operand) {
+//writeShort()
+
+}
+
+//0x09
+void ADD_HL_BC(void){
+    //add2()
+    registers.hl = registers.hl + registers.bc;
+}
+
+//0x0a
+void LD_A_BCP(void) {
+    //readByte()
+    //NOTE totaly gonna break;
+    registers.a = registers.bc;
+}
+
+//0x0b
+void DEC_BC(void){
+    registers.bc--;
+}
+
+//0x0c
+void INC_C (void){
+    //inc()
+    registers.c++;
+}
+
+//0x0d
+void DEC_C(void){
+    //dec()
+    registers.c--;
+}
+
+//0x0e
+void LD_C_N(unsigned char operand){
+    registers.c = operand;
+}
+
+//0x0f
+void RRCA(void){
+    unsigned char carry = (registers.a & 0x01);
+    if(carry) {
+        registers.carry_turn_on();
+    } else{
+        registers.carry_turn_off();
+    }
+
+    registers.a >>=1;
+    if(carry){
+        registers.a |= 0x80;
+    }
+
+    registers.clear_flags();
+    
+}
