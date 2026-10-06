@@ -39,7 +39,7 @@ int main(){
     registers_test.flags = 0x0;
     registers_test.substraction_turn_on();
 
-    if (registers_test.flags ^ 0b01000000) {
+    if (!(registers_test.flags ^ 0b01000000)) {
         cout << "PASSED" << endl;
     } else {
         cout << "FAILED" << endl;
@@ -62,7 +62,7 @@ int main(){
     registers_test.flags = 0x0;
     registers_test.half_carry_turn_on();
 
-    if (registers_test.flags ^ 0b00100000) {
+    if (!(registers_test.flags ^ 0b00100000)) {
         cout << "PASSED" << endl;
     } else {
         cout << "FAILED" << endl;
@@ -85,7 +85,7 @@ int main(){
     registers_test.flags = 0x0;
     registers_test.zero_turn_on();
 
-    if (registers_test.flags ^ 0b10000000) {
+    if (!(registers_test.flags ^ 0b10000000)) {
         cout << "PASSED" << endl;
     } else {
         cout << "FAILED" << endl;
