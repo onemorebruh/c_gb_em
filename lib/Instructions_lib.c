@@ -2,9 +2,11 @@
 
 #include <iostream>
 #include "../Registers.hpp"
+#include "../Memory.hpp"
 
 
 Registers& registers = Registers::getInstance();
+Memory& memory = Memory::getInstance();
 
 //0x00
 void NOP(){
@@ -14,7 +16,7 @@ void NOP(){
 void LD_BC_NN(unsigned short operand) { registers.bc = operand;}
 
 //0x02
-void LD_BCP_A(void) { registers.bc = registers.a;}
+void LD_BCP_A(void) { memory.writeByte(registers.bc, registers.a);}
 
 //0x03
 void INC_BC(void) { registers.bc++; }
@@ -45,8 +47,7 @@ void RLCA(void){
 
 //0x08
 void LD_NNP_SP(unsigned short operand) {
-//writeShort()
-
+    memory.writeShort(operand, registers.sp);
 }
 
 //0x09
@@ -57,9 +58,7 @@ void ADD_HL_BC(void){
 
 //0x0a
 void LD_A_BCP(void) {
-    //readByte()
-    //NOTE totaly gonna break;
-    registers.a = registers.bc;
+    registers.a = memory.readByte(registers.bc);
 }
 
 //0x0b

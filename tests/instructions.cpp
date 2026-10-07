@@ -12,6 +12,7 @@ int main(){
 
     //init registers
     Registers& registers_test = Registers::getInstance(); 
+    Memory& memory_test = Memory::getInstance();
 
     cout<<"INSTRUCTIONS"<<endl;
 
@@ -25,10 +26,10 @@ int main(){
     }
 
     cout<<"LD_BCP_A:   ";
-    registers_test.bc = 0x00;
-    registers_test.a = 0x1;
+    registers_test.bc = 0xA001;
+    registers_test.a = 0xFF;
     LD_BCP_A();
-    if(registers_test.bc == registers_test.a){
+    if(memory_test.readByte(registers_test.bc) == registers_test.a){
         cout<<"PASSED"<<endl;
     } else{
         cout<<"FAILED"<<endl;
@@ -114,6 +115,15 @@ int main(){
         cout<<" value have not been rotated successfully";
     }
 
+    cout << "LD_NNP_SP:   ";
+    registers_test.sp = 0xAFFF;
+    LD_NNP_SP(0xFF);
+    if(memory_test.readByte(registers_test.sp) == 0xFF){
+        cout << "PASSED" << endl;
+    } else {
+        cout << "FAILED" << endl;
+    }
+
     cout << "ADD_HL_BC:  ";
     registers_test.hl = 0x1000;
     registers_test.bc = 0x0100;
@@ -126,10 +136,12 @@ int main(){
 
 
     cout << "LD_A_BCP:   ";
-    registers_test.bc = 0x1234;
+    registers_test.bc = 0xA001;
+    registers_test.a = 0xFF;
+    LD_BCP_A();
     registers_test.a = 0x00;
     LD_A_BCP();
-    if(registers_test.a == 0x1234){
+    if(registers_test.a == 0xFF){
         cout << "PASSED" << endl;
     } else {
         cout << "FAILED" << endl;

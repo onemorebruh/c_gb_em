@@ -5,3 +5,4 @@ test:
 	./tests_memory
 	g++ -o tests_instructions ./tests/instructions.cpp
 	./tests_instructions
+	rm ./tests_registers ./tests_instructions ./tests_memory

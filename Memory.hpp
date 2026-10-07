@@ -110,4 +110,10 @@ class Memory{
             
             return 0;
         }
+
+        
+        void writeShort(unsigned short address, unsigned short value) {
+            this->writeByte(address, (unsigned char)(value & 0x00ff));
+            this->writeByte(address + 1, (unsigned char)((value & 0xff00) >> 8));
+        }
 } ;
