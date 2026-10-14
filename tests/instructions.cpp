@@ -1,4 +1,6 @@
 #include "../Registers.hpp"
+#include "../CPU.hpp"
+#include "../Memory.hpp"
 #include "../lib/Instructions_lib.c"
 #include <iostream>
 //init registers
@@ -13,6 +15,7 @@ int main(){
     //init registers
     Registers& registers_test = Registers::getInstance(); 
     Memory& memory_test = Memory::getInstance();
+    CPU& cpu_test = CPU::getInstance();
 
     cout<<"INSTRUCTIONS"<<endl;
 
@@ -117,7 +120,7 @@ int main(){
 
     cout << "LD_NNP_SP:   ";
     registers_test.sp = 0xAFFF;
-    LD_NNP_SP(0xFF);
+    LD_NNP_SP(0xAFFF);
     if(memory_test.readByte(registers_test.sp) == 0xFF){
         cout << "PASSED" << endl;
     } else {
@@ -237,5 +240,229 @@ int main(){
     } else {
         cout << "FAILED" << endl;
         cout << "carry bit was not rotated to bit 7" << endl;
+    }
+
+    cout << "STOP:       ";
+    cpu_test.stopped = false;
+    STOP();
+    if (cpu_test.stopped == true) {
+        cout << "PASSED" << endl;
+    } else {
+        cout << "FAILED" << endl;
+    }
+
+
+    cout << "LD_DE_NN:   ";
+    registers_test.de = 0x0000;
+    LD_DE_NN(0x1234);
+    if (registers_test.de == 0x1234) {
+        cout << "PASSED" << endl;
+    } else {
+        cout << "FAILED" << endl;
+    }
+
+
+    cout << "LD_DEP_A:   ";
+    registers_test.de = 0xA001;
+    registers_test.a = 0xFF;
+    LD_DEP_A();
+    if (memory_test.readByte(registers_test.de) == registers_test.a) {
+        cout << "PASSED" << endl;
+    } else {
+        cout << "FAILED" << endl;
+    }
+
+
+    cout << "INC_DE:     ";
+    registers_test.de = 0x0000;
+    INC_DE();
+    if (registers_test.de == 0x0001) {
+        cout << "PASSED" << endl;
+    } else {
+        cout << "FAILED" << endl;
+    }
+
+
+    cout << "INC_D:      ";
+    registers_test.d = 0x00;
+    INC_D();
+    if (registers_test.d == 0x01) {
+        cout << "PASSED" << endl;
+    } else {
+        cout << "FAILED" << endl;
+    }
+
+
+    cout << "DEC_D:      ";
+    registers_test.d = 0x01;
+    DEC_D();
+    if (registers_test.d == 0x00) {
+        cout << "PASSED" << endl;
+    } else {
+        cout << "FAILED" << endl;
+    }
+
+
+    cout << "LD_D_N:     ";
+    registers_test.d = 0x00;
+    LD_D_N(0x42);
+    if (registers_test.d == 0x42) {
+        cout << "PASSED" << endl;
+    } else {
+        cout << "FAILED" << endl;
+    }
+
+    cout << "RLA:        ";
+    registers_test.a = 0x80;
+    registers_test.carry_turn_off();
+    RLA();
+    if (registers_test.a == 0x00 && registers_test.get_carry() == 1) {
+        cout << "PASSED" << endl;
+    } else {
+        cout << "FAILED" << endl;
+    }
+
+    cout << "RLA (carry):";
+    registers_test.a = 0x00;
+    registers_test.carry_turn_on();
+    RLA();
+    if (registers_test.a == 0x01 && registers_test.get_carry() == 0) {
+        cout << "PASSED" << endl;
+    } else {
+        cout << "FAILED" << endl;
+    }
+
+    cout << "JR_N (+):   ";
+    registers_test.pc = 0x0100;
+    JR_N(0x05);
+    if (registers_test.pc == 0x0105) {
+        cout << "PASSED" << endl;
+    } else {
+        cout << "FAILED" << endl;
+    }
+
+    cout << "JR_N (-):   ";
+    registers_test.pc = 0x0100;
+    JR_N(0xFC); // -4 as signed char
+    if (registers_test.pc == 0x00FC) {
+        cout << "PASSED" << endl;
+    } else {
+        cout << "FAILED" << endl;
+    }
+
+    cout << "ADD_HL_DE:  ";
+    registers_test.hl = 0x1000;
+    registers_test.de = 0x0100;
+    ADD_HL_DE();
+    if (registers_test.hl == 0x1100) {
+        cout << "PASSED" << endl;
+    } else {
+        cout << "FAILED" << endl;
+    }
+
+    cout << "LD_A_DEP:   ";
+    registers_test.de = 0xA001;
+    memory_test.writeByte(0xA001, 0x42);
+    registers_test.a = 0x00;
+    LD_A_DEP();
+    if (registers_test.a == 0x42) {
+        cout << "PASSED" << endl;
+    } else {
+        cout << "FAILED";
+    }
+
+    cout << "DEC_DE:     ";
+    registers_test.de = 0x0001;
+    DEC_DE();
+    if (registers_test.de == 0x0000) {
+        cout << "PASSED" << endl;
+    } else {
+        cout << "FAILED" << endl;
+    }
+
+    cout << "DEC_DE (0): ";
+    registers_test.de = 0x0000;
+    DEC_DE();
+    if (registers_test.de == 0xFFFF) {
+        cout << "PASSED" << endl;
+    } else {
+        cout << "FAILED" << endl;
+    }
+
+    cout << "INC_E:      ";
+    registers_test.e = 0x0F;
+    INC_E();
+    if (registers_test.e == 0x10) {
+        cout << "PASSED" << endl;
+    } else {
+        cout << "FAILED" << endl;
+    }
+
+    cout << "INC_E (FF): ";
+    registers_test.e = 0xFF;
+    INC_E();
+    if (registers_test.e == 0x00) {
+        cout << "PASSED" << endl;
+    } else {
+        cout << "FAILED" << endl;
+    }
+
+    cout << "DEC_E:      ";
+    registers_test.e = 0x01;
+    DEC_E();
+    if (registers_test.e == 0x00) {
+        cout << "PASSED" << endl;
+    } else {
+        cout << "FAILED" << endl;
+    }
+
+    cout << "DEC_E (0):  ";
+    registers_test.e = 0x00;
+    DEC_E();
+    if (registers_test.e == 0xFF) {
+        cout << "PASSED" << endl;
+    } else {
+        cout << "FAILED" << endl;
+    }
+
+    cout << "LD_E_N:     ";
+    registers_test.e = 0x00;
+    LD_E_N(0x42);
+    if (registers_test.e == 0x42) {
+        cout << "PASSED" << endl;
+    } else {
+        cout << "FAILED" << endl;
+    }
+
+    cout << "RRA:        ";
+    registers_test.a = 0b10010110;
+    registers_test.flags = 0x00;
+    RRA();
+    if (registers_test.a == 0b01001011) {
+        if(registers_test.get_carry() == 1){
+            cout << "PASSED" << endl;
+        } else{
+            cout << "FAILED" << endl;
+            cout << "flags have not been cleared" << endl;
+        }
+    } else {
+        cout << "FAILED" << endl;
+        cout << "value have not been rotated successfully" << endl;
+    }
+
+    cout << "RRA (carry):";
+    registers_test.a = 0b00000001;
+    registers_test.flags = 0x00;
+    RRA();
+    if (registers_test.a == 0b10000000) {
+        if(registers_test.get_carry() == 1){
+            cout << "PASSED" << endl;
+        } else{
+            cout << "FAILED" << endl;
+            cout << "flags have not been cleared" << endl;
+        }
+    } else {
+        cout << "FAILED" << endl;
+        cout << "value have not been rotated successfully" << endl;
     }
 }

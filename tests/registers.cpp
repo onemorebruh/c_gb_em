@@ -25,9 +25,16 @@ int main(){
     }
 
     cout<<"TURN OFF:   ";
-    registers_test.flags = 0x0;
     registers_test.carry_turn_off();
     if(registers_test.flags ^ 0b00000000){
+        cout<<"FAILED"<<endl;
+    } else{
+        cout<<"PASSED"<<endl;
+    }
+
+    cout<<"GET:        ";
+    registers_test.carry_turn_on();
+    if(registers_test.get_carry() == 1){
         cout<<"FAILED"<<endl;
     } else{
         cout<<"PASSED"<<endl;

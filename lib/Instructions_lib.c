@@ -3,10 +3,11 @@
 #include <iostream>
 #include "../Registers.hpp"
 #include "../Memory.hpp"
-
+#include "../CPU.hpp"
 
 Registers& registers = Registers::getInstance();
 Memory& memory = Memory::getInstance();
+CPU& cpu = CPU::getInstance();
 
 //0x00
 void NOP(){
@@ -99,4 +100,109 @@ void RRCA(void){
 
     registers.clear_flags();
     
+}
+
+//0x10
+void STOP(void){
+    cpu.stopped = true;
+}
+
+//0x11
+void LD_DE_NN(unsigned short operand) {
+    registers.de = operand;
+}
+//0x12
+void LD_DEP_A(void){
+    memory.writeShort(registers.de, registers.a);
+}
+
+//0x13
+void INC_DE(void) {
+    registers.de++;
+}
+
+//0x14
+void INC_D(void){
+    //inc();
+    registers.d++;
+}
+
+//0x15
+void DEC_D(void){
+    //dec();
+    registers.d--;
+}
+
+//0x16
+void LD_D_N(unsigned char operand){
+    registers.d = operand;
+}
+
+//0x17
+void RLA(void){
+    int carry = registers.get_carry();
+    if(registers.a & 0x80){
+        registers.carry_turn_on();
+    } else {
+        registers.carry_turn_off();
+    }
+
+    registers.a <<= 1;
+    registers.a += carry;
+
+    registers.clear_flags();
+}
+
+//0x18
+void JR_N(unsigned char operand){
+    registers.pc += (signed char) operand;
+    //debugJump();
+}
+
+//0x19
+void ADD_HL_DE(void) {
+    registers.hl += registers.de;
+    //add2(&registers.hl, registers.de);
+}
+
+//0x1a
+void LD_A_DEP(void) {
+    registers.a = memory.readByte(registers.de);
+}
+
+//0x1b
+void DEC_DE(void){
+    registers.de--;
+}
+
+//0x1c
+void INC_E(void) {
+    registers.e++;
+    //inc();
+}
+
+//0x1d
+void DEC_E(void) {
+    registers.e--;
+    //dec();
+}
+
+//0x1e
+void LD_E_N(unsigned char operand){
+    registers.e = operand;
+}
+
+void RRA(void){
+    int carry = registers.get_carry()<<7;
+
+    if(registers.a & 0x01){
+        registers.carry_turn_on();
+    } else{
+        registers.carry_turn_off();
+    }
+
+    registers.a >>= 1;
+    registers.a += carry;
+
+    registers.clear_flags();
 }

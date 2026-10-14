@@ -61,7 +61,9 @@ class Registers{
 			static Registers instance; // Создается один раз при первом вызове
         	return instance;
 		};
-
+		int get_carry(){
+			return this->flags ^ FLAG_CARRY;
+		}
 		void carry_turn_on(){
 			this->flags |= FLAG_CARRY;
 			return;
