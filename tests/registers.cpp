@@ -33,11 +33,12 @@ int main(){
     }
 
     cout<<"GET:        ";
+    registers_test.clear_flags();
     registers_test.carry_turn_on();
     if(registers_test.get_carry() == 1){
-        cout<<"FAILED"<<endl;
-    } else{
         cout<<"PASSED"<<endl;
+    } else{
+        cout<<"FAILED"<<endl;
     }
 
     cout << "FLAG_SUBTRACTION" << endl;

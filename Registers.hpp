@@ -1,9 +1,12 @@
 #pragma once
 
-#define FLAG_CARRY 			0b00010000;
-#define FLAG_HALF_CARRY 	0b00100000;
-#define FLAG_SUBSTRACTION 	0b01000000;
-#define FLAG_ZERO			0b10000000;
+#include "./lib/bitwise.c"
+
+#define FLAG_CARRY 			0b00010000
+#define FLAG_HALF_CARRY 	0b00100000
+#define FLAG_SUBSTRACTION 	0b01000000
+#define FLAG_ZERO			0b10000000
+
 
 class Registers{
 	public:
@@ -62,7 +65,7 @@ class Registers{
         	return instance;
 		};
 		int get_carry(){
-			return this->flags ^ FLAG_CARRY;
+			return get_bit_via_mask(this->flags, FLAG_CARRY);
 		}
 		void carry_turn_on(){
 			this->flags |= FLAG_CARRY;
@@ -72,6 +75,9 @@ class Registers{
 			this->flags &= ~FLAG_CARRY;//NOTE ~
 			return;
 		}
+		int get_half_carry(){
+			return get_bit_via_mask(this->flags, FLAG_HALF_CARRY);
+		}
 		void half_carry_turn_on(){
 			this->flags |= FLAG_HALF_CARRY;
 			return;
@@ -80,6 +86,9 @@ class Registers{
 			this->flags &= ~FLAG_HALF_CARRY;
 			return;
 		}
+		int get_substraction(){
+			return get_bit_via_mask(this->flags, FLAG_SUBSTRACTION);
+		}
 		void substraction_turn_on(){
 			this->flags |= FLAG_SUBSTRACTION;
 			return;
@@ -87,6 +96,9 @@ class Registers{
 		void substraction_turn_off(){
 			this->flags &= ~FLAG_SUBSTRACTION;
 			return;
+		}
+		int get_zero(){
+			return get_bit_via_mask(this->flags, FLAG_ZERO);
 		}
 		void zero_turn_on(){
 			this->flags |= FLAG_ZERO;

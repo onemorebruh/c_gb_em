@@ -43,7 +43,7 @@ void RLCA(void){
     registers.a <<=1;
     registers.a += carry;
 
-    registers.clear_flags();
+    //registers.clear_flags();
 }
 
 //0x08
@@ -98,7 +98,7 @@ void RRCA(void){
         registers.a |= 0x80;
     }
 
-    registers.clear_flags();
+    //registers.clear_flags();
     
 }
 
@@ -141,7 +141,8 @@ void LD_D_N(unsigned char operand){
 //0x17
 void RLA(void){
     int carry = registers.get_carry();
-    if(registers.a & 0x80){
+
+    if(registers.a & 0b10000000){
         registers.carry_turn_on();
     } else {
         registers.carry_turn_off();
@@ -150,7 +151,7 @@ void RLA(void){
     registers.a <<= 1;
     registers.a += carry;
 
-    registers.clear_flags();
+    //registers.clear_flags();
 }
 
 //0x18
@@ -193,9 +194,8 @@ void LD_E_N(unsigned char operand){
 }
 
 void RRA(void){
-    int carry = registers.get_carry()<<7;
-
-    if(registers.a & 0x01){
+    int carry = registers.get_carry();
+    if(registers.a & 0b00000001){
         registers.carry_turn_on();
     } else{
         registers.carry_turn_off();
@@ -204,5 +204,5 @@ void RRA(void){
     registers.a >>= 1;
     registers.a += carry;
 
-    registers.clear_flags();
+    //registers.clear_flags();
 }

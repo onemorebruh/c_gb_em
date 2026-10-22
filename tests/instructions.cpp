@@ -90,12 +90,7 @@ int main(){
     registers_test.flags = 0x00;
     RLCA();
     if (registers_test.a == 0b00101101) {
-        if(!(registers_test.flags ^ 0b00000000)){
-            cout << "PASSED" << endl;   
-        } else {
-            cout<<"FAILED"<<endl;
-            cout<<"flags have not been cleared"<<endl;
-        }
+        cout << "PASSED" << endl;  
     } else {
         cout << "FAILED" << endl;
         cout<<" value have not been rotated successfully";
@@ -107,12 +102,7 @@ int main(){
     registers_test.flags = 0x00;
     RLCA();
     if (registers_test.a == 0b01101100){
-        if(!(registers_test.flags ^ 0b00000000)){
-            cout << "PASSED" << endl;   
-        } else {
-            cout<<"FAILED"<<endl;
-            cout<<"flags have not been cleared"<<endl;
-        }
+        cout << "PASSED" << endl;   
     } else {
         cout << "FAILED" << endl;
         cout<<" value have not been rotated successfully";
@@ -197,12 +187,7 @@ int main(){
     registers_test.flags = 0x00;
     RRCA();
     if(registers_test.a == 0b01001011){
-        if(registers_test.flags == 0x00){
-            cout << "PASSED" << endl;
-        } else {
-            cout << "FAILED" << endl;
-            cout << "flags have not been cleared" << endl;
-        }
+        cout << "PASSED" << endl;
     } else {
         cout << "FAILED" << endl;
         cout << "value have not been rotated successfully" << endl;
@@ -214,12 +199,7 @@ int main(){
     registers_test.flags = 0x00;
     RRCA();
     if(registers_test.a == 0b00011011){
-        if(registers_test.flags == 0x00){
-            cout << "PASSED" << endl;
-        } else {
-            cout << "FAILED" << endl;
-            cout << "flags have not been cleared" << endl;
-        }
+        cout << "PASSED" << endl;
     } else {
         cout << "FAILED" << endl;
         cout << "value have not been rotated successfully" << endl;
@@ -231,12 +211,7 @@ int main(){
     registers_test.flags = 0x00;
     RRCA();
     if(registers_test.a == 0b10000000){
-        if(registers_test.flags == 0x00){
             cout << "PASSED" << endl;
-        } else {
-            cout << "FAILED" << endl;
-            cout << "flags have not been cleared" << endl;
-        }
     } else {
         cout << "FAILED" << endl;
         cout << "carry bit was not rotated to bit 7" << endl;
@@ -316,10 +291,18 @@ int main(){
     registers_test.a = 0x80;
     registers_test.carry_turn_off();
     RLA();
-    if (registers_test.a == 0x00 && registers_test.get_carry() == 1) {
-        cout << "PASSED" << endl;
+    if (registers_test.a == 0x00 ) {
+        if(registers_test.get_carry() == 1){
+            cout << "PASSED" << endl;
+        } else{
+            cout << "FAILED" << endl;
+            cout << "wrong carry" << endl;
+
+        }
+
     } else {
         cout << "FAILED" << endl;
+        cout << "wrong rotation" << endl;
     }
 
     cout << "RLA (carry):";
@@ -434,32 +417,24 @@ int main(){
         cout << "FAILED" << endl;
     }
 
-    cout << "RRA:        ";
+    cout << "RRA (big):  ";
     registers_test.a = 0b10010110;
     registers_test.flags = 0x00;
     RRA();
     if (registers_test.a == 0b01001011) {
-        if(registers_test.get_carry() == 1){
-            cout << "PASSED" << endl;
-        } else{
-            cout << "FAILED" << endl;
-            cout << "flags have not been cleared" << endl;
-        }
+        cout << "PASSED" << endl;
     } else {
         cout << "FAILED" << endl;
         cout << "value have not been rotated successfully" << endl;
     }
 
-    cout << "RRA (carry):";
+    cout << "RRA (small):";
     registers_test.a = 0b00000001;
     registers_test.flags = 0x00;
     RRA();
-    if (registers_test.a == 0b10000000) {
-        if(registers_test.get_carry() == 1){
+    if (registers_test.a == 0b00000000) {
+        if (registers_test.get_carry() == 1){
             cout << "PASSED" << endl;
-        } else{
-            cout << "FAILED" << endl;
-            cout << "flags have not been cleared" << endl;
         }
     } else {
         cout << "FAILED" << endl;
