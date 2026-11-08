@@ -57,34 +57,34 @@ void ADD_HL_BC(void){
     registers.hl = registers.hl + registers.bc;
 }
 
-//0x0a
+//0x0A
 void LD_A_BCP(void) {
     registers.a = memory.readByte(registers.bc);
 }
 
-//0x0b
+//0x0B
 void DEC_BC(void){
     registers.bc--;
 }
 
-//0x0c
+//0x0C
 void INC_C (void){
     //inc()
     registers.c++;
 }
 
-//0x0d
+//0x0D
 void DEC_C(void){
     //dec()
     registers.c--;
 }
 
-//0x0e
+//0x0E
 void LD_C_N(unsigned char operand){
     registers.c = operand;
 }
 
-//0x0f
+//0x0F
 void RRCA(void){
     unsigned char carry = (registers.a & 0x01);
     if(carry) {
@@ -166,33 +166,34 @@ void ADD_HL_DE(void) {
     //add2(&registers.hl, registers.de);
 }
 
-//0x1a
+//0x1A
 void LD_A_DEP(void) {
     registers.a = memory.readByte(registers.de);
 }
 
-//0x1b
+//0x1B
 void DEC_DE(void){
     registers.de--;
 }
 
-//0x1c
+//0x1C
 void INC_E(void) {
     registers.e++;
     //inc();
 }
 
-//0x1d
+//0x1D
 void DEC_E(void) {
     registers.e--;
     //dec();
 }
 
-//0x1e
+//0x1E
 void LD_E_N(unsigned char operand){
     registers.e = operand;
 }
 
+//0x1F
 void RRA(void){
     int carry = registers.get_carry();
     if(registers.a & 0b00000001){
@@ -205,4 +206,82 @@ void RRA(void){
     registers.a += carry;
 
     //registers.clear_flags();
+}
+
+//0x20
+void JR_NZ_N(unsigned char operand){
+    if(registers.get_zero()){
+        cpu.ticks_add(8);
+    } else {
+        registers.pc += (signed char)operand;
+
+        cpu.ticks_add(12);
+    }
+}
+
+//0x21
+void LD_HL_NN(unsigned short operand) {
+    registers.hl = operand;
+}
+
+//0x22
+void LDI_HLP_A(void){
+    memory.writeByte(registers.hl++, registers.a);
+}
+
+//0x23
+void INC_HL(void){
+    registers.hl++;
+}
+
+//0x24
+void INC_H(void){
+    registers.hl++;//inc
+}
+
+
+//0x25
+void DEC_H(void){
+    registers.hl--;//dec
+}
+
+//0x26
+void LD_H_N(unsigned char operand){
+    registers.h = operand;
+}
+
+//0x27
+void DAA(void){
+    unsigned short s = registers.a;
+
+    if(registers.get_substraction()){
+        if(registers.get_half_carry()){
+            s = (s - 0x06)&0xFF;
+        }
+
+        if(registers.get_carry()){
+            s -= 0x60;
+        }
+    } else {//todo check for stack overflow
+        if(registers.get_half_carry() || (s & 0xF)>9){
+            s += 0x06;
+        }
+
+        if(registers.get_carry() || s > 0x9F){
+            s += 0x60;
+        }
+    }
+
+    registers.a = s;
+    registers.half_carry_turn_off();
+
+    if(registers.a){
+        registers.zero_turn_off();
+    } else{
+        registers.zero_turn_on();
+    }
+
+    if(s >= 0x100){
+        registers.carry_turn_on();
+    }
 }
