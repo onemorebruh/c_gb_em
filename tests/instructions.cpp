@@ -627,5 +627,285 @@ int main(){
     } else {
         cout << "FAILED (a=0x" << hex << (int)registers_test.a << ")" << endl;
     }
+
+        // ============================================================
+    //  ТЕСТЫ ДЛЯ 0x28–0x2F
+    // ============================================================
+
+    // ---------- 0x28 JR_Z_N ----------
+    // Переход НЕ выполняется (Z=0): PC не меняется, ticks += 8
+    cout << "JR_Z_N (not taken):   ";
+    registers_test.pc = 0x0100;
+    registers_test.flags = 0x00;        // Z=0
+    cpu_test.ticks_set(0);
+    JR_Z_N(0x05);
+    if (registers_test.pc == 0x0100 && cpu_test.ticks_get() == 8) {
+        cout << "PASSED" << endl;
+    } else {
+        cout << "FAILED (pc=0x" << hex << registers_test.pc
+             << ", ticks=" << dec << cpu_test.ticks_get() << ")" << endl;
+    }
+
+    // Переход выполняется вперёд (Z=1, +5): PC += 5, ticks += 12
+    cout << "JR_Z_N (taken +):     ";
+    registers_test.pc = 0x0100;
+    registers_test.flags = 0x00;
+    registers_test.zero_turn_on();      // Z=1
+    cpu_test.ticks_set(0);
+    JR_Z_N(0x05);
+    if (registers_test.pc == 0x0105 && cpu_test.ticks_get() == 12) {
+        cout << "PASSED" << endl;
+    } else {
+        cout << "FAILED (pc=0x" << hex << registers_test.pc
+             << ", ticks=" << dec << cpu_test.ticks_get() << ")" << endl;
+    }
+
+    // Переход выполняется назад (Z=1, -4): PC -= 4
+    cout << "JR_Z_N (taken -):     ";
+    registers_test.pc = 0x0100;
+    registers_test.flags = 0x00;
+    registers_test.zero_turn_on();
+    cpu_test.ticks_set(0);
+    JR_Z_N(0xFC);                       // -4 как signed char
+    if (registers_test.pc == 0x00FC && cpu_test.ticks_get() == 12) {
+        cout << "PASSED" << endl;
+    } else {
+        cout << "FAILED (pc=0x" << hex << registers_test.pc << ")" << endl;
+    }
+
+    // ---------- 0x29 ADD_HL_HL ----------
+    // HL = HL + HL; проверяем и флаг carry при переполнении
+    cout << "ADD_HL_HL:            ";
+    registers_test.hl = 0x1234;
+    registers_test.flags = 0x00;
+    ADD_HL_HL();
+    if (registers_test.hl == 0x2468 && registers_test.get_carry() == 0) {
+        cout << "PASSED" << endl;
+    } else {
+        cout << "FAILED (hl=0x" << hex << registers_test.hl
+             << ", C=" << (int)registers_test.get_carry() << ")" << endl;
+    }
+
+    // Переполнение: 0x8000 + 0x8000 = 0x10000 → HL=0x0000, C=1
+    cout << "ADD_HL_HL (overflow): ";
+    registers_test.hl = 0x8000;
+    registers_test.flags = 0x00;
+    ADD_HL_HL();
+    if (registers_test.hl == 0x0000 && registers_test.get_carry() == 1) {
+        cout << "PASSED" << endl;
+    } else {
+        cout << "FAILED (hl=0x" << hex << registers_test.hl
+             << ", C=" << (int)registers_test.get_carry() << ")" << endl;
+    }
+
+    // ---------- 0x2A LDI_A_HLP ----------
+    // A = [HL], HL++
+    cout << "LDI_A_HLP:            ";
+    registers_test.hl = 0xC000;
+    memory_test.writeByte(0xC000, 0x5A);
+    registers_test.a = 0x00;
+    LDI_A_HLP();
+    if (registers_test.a == 0x5A && registers_test.hl == 0xC001) {
+        cout << "PASSED" << endl;
+    } else {
+        cout << "FAILED (a=0x" << hex << (int)registers_test.a
+             << ", hl=0x" << registers_test.hl << ")" << endl;
+    }
+
+    // ---------- 0x2B DEC_HL ----------
+    cout << "DEC_HL:               ";
+    registers_test.hl = 0x1234;
+    DEC_HL();
+    if (registers_test.hl == 0x1233) {
+        cout << "PASSED" << endl;
+    } else {
+        cout << "FAILED (hl=0x" << hex << registers_test.hl << ")" << endl;
+    }
+
+    // Переполнение вниз: 0x0000 → 0xFFFF
+    cout << "DEC_HL (wrap):        ";
+    registers_test.hl = 0x0000;
+    DEC_HL();
+    if (registers_test.hl == 0xFFFF) {
+        cout << "PASSED" << endl;
+    } else {
+        cout << "FAILED (hl=0x" << hex << registers_test.hl << ")" << endl;
+    }
+
+    // ---------- 0x2C INC_L (⚠️ СОДЕРЖИТ БАГ) ----------
+    // По спецификации: L = L + 1, обновляются флаги Z/H/N.
+    // В текущем коде: registers.l++ — флаги НЕ обновляются!
+    cout << "INC_L (value):        ";
+    registers_test.l = 0x12;
+    INC_L();
+    if (registers_test.l == 0x13) {
+        cout << "PASSED" << endl;
+    } else {
+        cout << "FAILED (l=0x" << hex << (int)registers_test.l << ")" << endl;
+    }
+
+    // Проверка флага Z: 0xFF + 1 = 0x00 → Z=1
+    cout << "INC_L (Z flag):       ";
+    registers_test.l = 0xFF;
+    registers_test.flags = 0x00;
+    INC_L();
+    if (registers_test.l == 0x00 && registers_test.get_zero() == 1) {
+        cout << "PASSED" << endl;
+    } else {
+        cout << "FAILED (l=0x" << hex << (int)registers_test.l
+             << ", Z=" << (int)registers_test.get_zero() << ")" << endl;
+        cout << "  BUG: INC_L doesn't update flags (Z should be 1)" << endl;
+    }
+
+    // Проверка флага H: 0x0F + 1 = 0x10 → H=1
+    cout << "INC_L (H flag):       ";
+    registers_test.l = 0x0F;
+    registers_test.flags = 0x00;
+    INC_L();
+    if (registers_test.l == 0x10 && registers_test.get_half_carry() == 1) {
+        cout << "PASSED" << endl;
+    } else {
+        cout << "FAILED (l=0x" << hex << (int)registers_test.l
+             << ", H=" << (int)registers_test.get_half_carry() << ")" << endl;
+        cout << "  BUG: INC_L doesn't update flags (H should be 1)" << endl;
+    }
+
+    // Проверка флага N: после INC N должен быть 0 (сбрасываться)
+    cout << "INC_L (N flag):       ";
+    registers_test.l = 0x12;
+    registers_test.flags = 0x00;
+    registers_test.substraction_turn_on();  // ставим N=1
+    INC_L();
+    if (registers_test.get_substraction() == 0) {
+        cout << "PASSED" << endl;
+    } else {
+        cout << "FAILED (N=" << (int)registers_test.get_substraction() << ")" << endl;
+        cout << "  BUG: INC_L doesn't clear N flag" << endl;
+    }
+
+    // ---------- 0x2D DEC_L (⚠️ СОДЕРЖИТ БАГ) ----------
+    // По спецификации: L = L - 1, обновляются флаги Z/H/N.
+    // В текущем коде: registers.l-- — флаги НЕ обновляются!
+    cout << "DEC_L (value):        ";
+    registers_test.l = 0x12;
+    DEC_L();
+    if (registers_test.l == 0x11) {
+        cout << "PASSED" << endl;
+    } else {
+        cout << "FAILED (l=0x" << hex << (int)registers_test.l << ")" << endl;
+    }
+
+    // Проверка флага Z: 0x01 - 1 = 0x00 → Z=1
+    cout << "DEC_L (Z flag):       ";
+    registers_test.l = 0x01;
+    registers_test.flags = 0x00;
+    DEC_L();
+    if (registers_test.l == 0x00 && registers_test.get_zero() == 1) {
+        cout << "PASSED" << endl;
+    } else {
+        cout << "FAILED (l=0x" << hex << (int)registers_test.l
+             << ", Z=" << (int)registers_test.get_zero() << ")" << endl;
+        cout << "  BUG: DEC_L doesn't update flags (Z should be 1)" << endl;
+    }
+
+    // Проверка флага H: 0x10 - 1 = 0x0F → H=1 (заимствование из младшей тетрады)
+    cout << "DEC_L (H flag):       ";
+    registers_test.l = 0x10;
+    registers_test.flags = 0x00;
+    DEC_L();
+    if (registers_test.l == 0x0F && registers_test.get_half_carry() == 1) {
+        cout << "PASSED" << endl;
+    } else {
+        cout << "FAILED (l=0x" << hex << (int)registers_test.l
+             << ", H=" << (int)registers_test.get_half_carry() << ")" << endl;
+        cout << "  BUG: DEC_L doesn't update flags (H should be 1)" << endl;
+    }
+
+    // Проверка флага N: после DEC N должен быть 1
+    cout << "DEC_L (N flag):       ";
+    registers_test.l = 0x12;
+    registers_test.flags = 0x00;
+    DEC_L();
+    if (registers_test.get_substraction() == 1) {
+        cout << "PASSED" << endl;
+    } else {
+        cout << "FAILED (N=" << (int)registers_test.get_substraction() << ")" << endl;
+        cout << "  BUG: DEC_L doesn't set N flag" << endl;
+    }
+
+    // Переполнение вниз: 0x00 - 1 = 0xFF
+    cout << "DEC_L (wrap):         ";
+    registers_test.l = 0x00;
+    registers_test.flags = 0x00;
+    DEC_L();
+    if (registers_test.l == 0xFF) {
+        cout << "PASSED" << endl;
+    } else {
+        cout << "FAILED (l=0x" << hex << (int)registers_test.l << ")" << endl;
+    }
+
+    // ---------- 0x2E LD_L_N ----------
+    cout << "LD_L_N:               ";
+    registers_test.l = 0x00;
+    LD_L_N(0x42);
+    if (registers_test.l == 0x42) {
+        cout << "PASSED" << endl;
+    } else {
+        cout << "FAILED (l=0x" << hex << (int)registers_test.l << ")" << endl;
+    }
+
+    // ---------- 0x2F CPL (⚠️ СОДЕРЖИТ БАГИ) ----------
+    // По спецификации: A = ~A; N=1, H=1; Z НЕ МЕНЯЕТСЯ.
+    // В текущем коде: zero_turn_on без скобок (возможно, макрос),
+    // и Z устанавливается, хотя не должен.
+    cout << "CPL (invert):         ";
+    registers_test.a = 0xAA;
+    registers_test.flags = 0x00;
+    CPL();
+    if (registers_test.a == 0x55) {
+        cout << "PASSED" << endl;
+    } else {
+        cout << "FAILED (a=0x" << hex << (int)registers_test.a << ")" << endl;
+    }
+
+    // Проверка N=1 и H=1
+    cout << "CPL (N,H flags):      ";
+    registers_test.a = 0x00;
+    registers_test.flags = 0x00;
+    CPL();
+    if (registers_test.get_substraction() == 1
+        && registers_test.get_half_carry() == 1) {
+        cout << "PASSED" << endl;
+    } else {
+        cout << "FAILED (N=" << (int)registers_test.get_substraction()
+             << ", H=" << (int)registers_test.get_half_carry() << ")" << endl;
+        cout << "  BUG: CPL must set N=1 and H=1" << endl;
+    }
+
+    // Проверка: Z НЕ должен меняться (был 0 — остался 0)
+    cout << "CPL (Z unchanged 0):  ";
+    registers_test.a = 0x00;
+    registers_test.flags = 0x00;        // Z=0
+    CPL();
+    if (registers_test.get_zero() == 0) {
+        cout << "PASSED" << endl;
+    } else {
+        cout << "FAILED (Z=" << (int)registers_test.get_zero() << ")" << endl;
+        cout << "  BUG: CPL must NOT modify Z flag (was 0, should stay 0)" << endl;
+    }
+
+    // Проверка: Z НЕ должен меняться (был 1 — остался 1)
+    cout << "CPL (Z unchanged 1):  ";
+    registers_test.a = 0xFF;
+    registers_test.flags = 0x00;
+    registers_test.zero_turn_on();      // Z=1
+    CPL();
+    if (registers_test.a == 0x00 && registers_test.get_zero() == 1) {
+        cout << "PASSED" << endl;
+    } else {
+        cout << "FAILED (a=0x" << hex << (int)registers_test.a
+             << ", Z=" << (int)registers_test.get_zero() << ")" << endl;
+        cout << "  BUG: CPL must NOT modify Z flag (was 1, should stay 1)" << endl;
+    }
 }
 

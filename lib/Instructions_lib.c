@@ -285,3 +285,51 @@ void DAA(void){
         registers.carry_turn_on();
     }
 }
+
+//0x28
+void JR_Z_N(unsigned char operand){
+    if(registers.get_zero()){
+        registers.pc += (signed char) operand;
+
+        cpu.ticks_add(12);
+    } else{
+        cpu.ticks_add(8);
+    }
+}
+
+//0x29
+void ADD_HL_HL(void){
+    //add2(&registers.hl, registers.hl);
+}
+
+//0x2A
+void LDI_A_HLP(void){
+    registers.a = memory.readByte(registers.hl++);
+}
+
+//0x2B
+void DEC_HL(void) {
+    registers.hl--;
+}
+
+//0x2C
+void INC_L(void){
+    registers.l++;//inc()
+}
+
+//0x2D
+void DEC_L(void){
+    registers.l--;// dec() 
+}
+
+//0x2E
+void LD_L_N(unsigned char operand){
+    registers.l = operand;
+}
+
+//0x2F
+void CPL(void){
+    registers.a = ~registers.a;
+    registers.half_carry_turn_on();
+    registers.substraction_turn_on();
+}
